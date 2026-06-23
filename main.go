@@ -3,42 +3,43 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
 )
 
-func withdraw(balance int, amount int) (int, error) {
-	if amount > balance {
-		return balance, errors.New("insufficient funds")
+func calculateTax(amount int) int {
+	return (amount * 10) / 100
+}
+
+func formatCurrency(amount int) string {
+	return fmt.Sprintf("%d.00", amount)
+}
+
+func processPayment(totalCost int, walletBalance int) (int, error) {
+	if totalCost > walletBalance {
+		return walletBalance, errors.New("payment declined: insufficient funds")
 	}
-	return balance - amount, nil
+	return walletBalance - totalCost, nil
 }
 
 func main() {
-	fmt.Println("'--- 1. Banking Transaction (Value + Error) ---")
+	fmt.Println("--- Checkout Process ---")
 
-	currentBalance := 100
+	itemPrice := 70
+	wallet := 60
 
-	newBalance, err := withdraw(currentBalance, 40)
+	tax := calculateTax(itemPrice)
+	finalTotal := itemPrice + tax
+
+	fmt.Println("Item Price:", formatCurrency(itemPrice))
+	fmt.Println("Tax Added:", formatCurrency(tax))
+	fmt.Println("Amount Due:", formatCurrency(finalTotal))
+
+	fmt.Println("\n--- Processing Transaction ---")
+
+	newBalance, err := processPayment(finalTotal, wallet)
 	if err != nil {
-		fmt.Println("Transaction failed:", err)
+		fmt.Println("System Alert:", err)
 	} else {
-		fmt.Println("Success! You withdrew $40. New balance is:", newBalance)
-	}
-
-	_, badErr := withdraw(currentBalance, 500)
-	if badErr != nil {
-		fmt.Println("Transaction blocked:", badErr)
-	}
-
-	fmt.Println("\n--- 2. Checking System Settings (Value + Status) ---")
-
-	_, ok := os.LookupEnv("PATH")
-	if ok {
-		fmt.Println("System check: The 'PATH' variable exists on this computer.")
-	}
-
-	_, hasSecretKey := os.LookupEnv("MY_SECRET_API_KEY")
-	if !hasSecretKey {
-		fmt.Println("Security check: No secret key was found on this system.")
+		fmt.Println("Success! Thank you for your purchase.")
+		fmt.Println("Remaining Wallet Balance:", formatCurrency(newBalance))
 	}
 }
