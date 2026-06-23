@@ -1,45 +1,44 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"strconv"
+	"os"
 )
 
-func findEmployee(id int) (string, bool) {
-	employees := map[int]string{
-		101: "Sarah",
-		102: "John",
+func withdraw(balance int, amount int) (int, error) {
+	if amount > balance {
+		return balance, errors.New("insufficient funds")
 	}
-
-	name, isEmployed := employees[id]
-
-	return name, isEmployed
+	return balance - amount, nil
 }
 
 func main() {
-	fmt.Println("--- 1. Converting Text (Value + Error) ---")
+	fmt.Println("'--- 1. Banking Transaction (Value + Error) ---")
 
-	userAge, err := strconv.Atoi("30")
+	currentBalance := 100
+
+	newBalance, err := withdraw(currentBalance, 40)
 	if err != nil {
-		fmt.Println("Conversation failed:", err)
+		fmt.Println("Transaction failed:", err)
 	} else {
-		fmt.Println("Success! In 5 years, the user will be", userAge+5)
+		fmt.Println("Success! You withdrew $40. New balance is:", newBalance)
 	}
 
-	_, badErr := strconv.Atoi("thirty")
+	_, badErr := withdraw(currentBalance, 500)
 	if badErr != nil {
-		fmt.Println("Caught a bad input:", badErr)
+		fmt.Println("Transaction blocked:", badErr)
 	}
 
-	fmt.Println("\n--- 2. Custom functions (Value + Status) ---")
+	fmt.Println("\n--- 2. Checking System Settings (Value + Status) ---")
 
-	employeeName, ok := findEmployee(101)
+	_, ok := os.LookupEnv("PATH")
 	if ok {
-		fmt.Println("Employee found. Access granted for:", employeeName)
+		fmt.Println("System check: The 'PATH' variable exists on this computer.")
 	}
 
-	_, isFound := findEmployee(999)
-	if !isFound {
-		fmt.Println("Access denied: Employee ID 999 does not exist.")
+	_, hasSecretKey := os.LookupEnv("MY_SECRET_API_KEY")
+	if !hasSecretKey {
+		fmt.Println("Security check: No secret key was found on this system.")
 	}
 }
