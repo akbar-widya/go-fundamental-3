@@ -2,44 +2,44 @@ package main
 
 import (
 	"fmt"
-	"errors"
+	"strconv"
 )
 
-func divide(a, b int) (int, error) {
-	if b == 0 {
-		return 0, errors.New("cannot divide by zero")
+func findEmployee(id int) (string, bool) {
+	employees := map[int]string{
+		101: "Sarah",
+		102: "John",
 	}
-	return a / b, nil
+
+	name, isEmployed := employees[id]
+
+	return name, isEmployed
 }
 
 func main() {
-	fmt.Println("--- 1. Value and Error ---")
+	fmt.Println("--- 1. Converting Text (Value + Error) ---")
 
-	result, err := divide(10, 2)
+	userAge, err := strconv.Atoi("30")
 	if err != nil {
-		fmt.Println("Failed:", err)
+		fmt.Println("Conversation failed:", err)
 	} else {
-		fmt.Println("Success! 10 / 2 =", result)
+		fmt.Println("Success! In 5 years, the user will be", userAge+5)
 	}
 
-	_, badErr := divide(10, 0)
+	_, badErr := strconv.Atoi("thirty")
 	if badErr != nil {
-		fmt.Println("Failure caught:", badErr)
+		fmt.Println("Caught a bad input:", badErr)
 	}
 
-	fmt.Println("\n--- 2. The Comma-OK Idiom ---")
+	fmt.Println("\n--- 2. Custom functions (Value + Status) ---")
 
-	inventory := map[string]int{"apples": 5}
-
-	count, ok := inventory["apples"]
+	employeeName, ok := findEmployee(101)
 	if ok {
-		fmt.Println("Item found! We have", count, "apples.")
+		fmt.Println("Employee found. Access granted for:", employeeName)
 	}
 
-	fmt.Println("\n--- 3. The Blank Identifier (_) ---")
-
-	_, hasOranges := inventory["oranges"]
-	if !hasOranges {
-		fmt.Println("Item missing: We do not sell oranges.")
+	_, isFound := findEmployee(999)
+	if !isFound {
+		fmt.Println("Access denied: Employee ID 999 does not exist.")
 	}
 }
